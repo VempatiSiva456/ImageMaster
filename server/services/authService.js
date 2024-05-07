@@ -7,7 +7,7 @@ exports.register = async ({ name, email, password }) => {
     if (existingUser) {
         throw { message: 'Email already registered', status: 409 };
     }
-    const hashedPassword = await bcrypt.hash(password, 8);
+    const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ name, email, password: hashedPassword });
     await user.save();
     return { message: 'User successfully registered. Please log in.' };

@@ -1,17 +1,26 @@
-import React, { useState } from 'react';
-import Dashboard from './Dashboard';
-import { Button } from '@mui/joy';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { Button, Grid } from "@mui/joy";
 
 const SelectMode = () => {
-    const [mode, setMode] = useState('private');  
+  const navigate = useNavigate();
 
-    return (
-        <div>
-            <Button onClick={() => setMode('public')}>Show Public Images</Button>
-            <Button onClick={() => setMode('private')}>Show Private Images</Button>
-            <Dashboard mode={mode} />
-        </div>
-    );
+  return (
+    <div>
+      <Grid container sx={{margin:"40vh"}}>
+        <Grid item xs={12} sm={12} md={6}>
+          <Button onClick={() => navigate("/public-dashboard")}>
+            Join Public
+          </Button>
+        </Grid>
+        <Grid item xs={12} sm={12} md={6}>
+          <Button onClick={() => navigate("/private-dashboard")}>
+            Join Private
+          </Button>
+        </Grid>
+      </Grid>
+    </div>
+  );
 };
 
 export default SelectMode;

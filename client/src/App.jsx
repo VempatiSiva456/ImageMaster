@@ -22,10 +22,18 @@ function App() {
           }
         />
         <Route
-          path="/dashboard"
+          path="/public-dashboard"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <Dashboard mode={'public'} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/private-dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard mode={'private'} />
             </ProtectedRoute>
           }
         />

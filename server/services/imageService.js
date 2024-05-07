@@ -26,6 +26,31 @@ async function createBucketIfNotExists(bucketName) {
   }
 }
 
+async function generatePresignedUrl(objectName, bucketName, expiry) {
+    try {
+      await minioClient.statObject(bucketName, objectName);
+
+      const presignedUrl = await new Promise((resolve, reject) => {
+        minioClient.presignedGetObject(bucketName, objectName, expiry, {
+          'Content-Disposition': 'inline'
+        }, function (err, presignedUrl) {
+          if (err) {
+            reject(err)
+          }
+          resolve(presignedUrl)
+        })
+      })
+      return presignedUrl
+    } catch (error) {
+      if (error.code === 'NotFound') {
+        throw new Error('File not found', 404)
+      } else {
+        throw new Error(error.message, 500)
+      }
+    }
+  }
+
+
 exports.uploadImage = async (mode, file, userId) => {
     const folder = mode === 'public' ? 'public' : 'private';
     const uniqueFilename = `${folder}/${uuidv4()}_${file.originalname}`;
@@ -36,7 +61,8 @@ exports.uploadImage = async (mode, file, userId) => {
             'Content-Type': file.mimetype
         });
 
-        const imageUrl = `http://${process.env.MINIO_END_POINT}:${process.env.MINIO_PORT}/${bucketName}/${uniqueFilename}`;
+        const expiry = 24 * 60 * 60; // URL valid for 24 hours
+        const imageUrl = await generatePresignedUrl(uniqueFilename, bucketName, expiry)
 
         const image = new Image({
             filename: uniqueFilename,
@@ -55,12 +81,13 @@ exports.uploadImage = async (mode, file, userId) => {
     }
 };
 
+
 exports.fetchImages = async (mode, userId) => {
     try {
         let images;
-        if (mode === "public") {
+        if (mode === 'public') {
             images = await Image.find({ mode: mode });
-        } else if (mode === "private") {
+        } else if (mode === 'private') {
             images = await Image.find({ owner: userId, mode: mode });
         } else {
             throw new Error("Invalid mode specified");

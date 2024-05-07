@@ -28,7 +28,7 @@ exports.getImages = async (req, res) => {
         return res.status(400).send({ error: 'Mode parameter is required' });
     }
     try {
-        const images = await imageService.fetchImages(req.user._id, mode);
+        const images = await imageService.fetchImages(mode, req.user._id);
         res.status(200).send(images);
     } catch (error) {
         res.status(error.status || 500).send({ error: error.message });

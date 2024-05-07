@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Grid, Box, Button, Breadcrumbs, Typography, Modal, ModalDialog } from '@mui/joy';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
@@ -7,9 +7,33 @@ import Dropzone from './UploadForm';
 import { useAuth } from '../contexts/AuthContext';
 
 const Dashboard = ({mode}) => {
-  console.log(mode);
   const [open, setOpen] = useState(false);
+  const [images, setImages] = useState([]);
   const { logout } = useAuth();
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/images/get?mode=${mode}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          credentials: "include"
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch images');
+        }
+        const data = await response.json();
+        setImages(data);
+      } catch (error) {
+        console.error('Error fetching images:', error);
+        setImages([]);
+      }
+    };
+
+    fetchImages();
+  }, [mode]);
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', flexDirection: 'column' }}>
@@ -32,6 +56,11 @@ const Dashboard = ({mode}) => {
               Upload Image
             </Button>
           </Grid>
+          {images.map((img, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <img src={img.imageUrl} alt={img.filename} style={{ width: '100%' }} />
+            </Grid>
+          ))}
         </Grid>
       </Box>
       <Modal open={open} onClose={() => setOpen(false)} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

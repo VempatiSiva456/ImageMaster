@@ -8,7 +8,7 @@ const DropzoneComponent = ({mode}) => {
 
     console.log(mode);
 
-    const handleUpload = async (uploadType) => {
+    const handleUpload = async () => {
         if (!files.length) {
             setErrorMessage('Please select images to upload.');
             return;
@@ -25,7 +25,6 @@ const DropzoneComponent = ({mode}) => {
                 body: formData,
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    'Upload-Type': uploadType
                 },
                 credentials:"include"
             });
@@ -44,6 +43,10 @@ const DropzoneComponent = ({mode}) => {
     };
 
     const onDrop = (acceptedFiles) => {
+        if (files.length + acceptedFiles.length > 10) {
+            setErrorMessage('You can only upload up to 10 files.');
+            return;
+        }
         setFiles(prev => [...prev, ...acceptedFiles]);
     };
 
@@ -54,46 +57,38 @@ const DropzoneComponent = ({mode}) => {
 
     return (
         <Box sx={{ p: 2 }}>
-            <Box
-                {...getRootProps()}
-                sx={{
-                    p: 2,
-                    border: '2px dashed',
-                    borderColor: 'neutral.outlinedBorder',
-                    bgcolor: 'background.body',
-                    color: 'text.primary',
-                    borderRadius: 2,
-                    minHeight: 200,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    '&:hover': {
-                        backgroundColor: 'background.level1',
-                        borderColor: 'primary.outlinedHoverBorder'
-                    }
-                }}
-            >
-                <input {...getInputProps()} />
-                <Typography variant="body2">
-                    {isDragActive ? "Drop the images here ..." : files.length ? `Selected: ${files.map(file => file.name).join(', ')}` : "Drag 'n' drop images here, or click to select images"}
-                </Typography>
-            </Box>
-            {errorMessage && <Typography variant="body3" sx={{ color: 'danger.fg', mt: 2 }}>{errorMessage}</Typography>}
-            <Grid container spacing={2} sx={{ mt: 2 }}>
-                <Grid item xs={6}>
-                    <Button variant="outlined" onClick={() => handleUpload('append')} disabled={!files.length}>
-                        Append
-                    </Button>
-                </Grid>
-                <Grid item xs={6}>
-                    <Button variant="outlined" onClick={() => handleUpload('replace')} disabled={!files.length}>
-                        Replace
-                    </Button>
-                </Grid>
-            </Grid>
-        </Box>
+    <Box
+        {...getRootProps()}
+        sx={{
+            p: 2,
+            border: '2px dashed',
+            borderColor: 'neutral.outlinedBorder',
+            bgcolor: 'background.body',
+            color: 'text.primary',
+            borderRadius: 2,
+            minHeight: 200,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            '&:hover': {
+                backgroundColor: 'background.level1',
+                borderColor: 'primary.outlinedHoverBorder'
+            }
+        }}
+    >
+        <input {...getInputProps()} />
+        <Typography variant="body2" sx={{ mb: 2 }}>
+            {isDragActive ? "Drop the images here ..." : files.length ? `Selected: ${files.map(file => file.name).join(', ')}` : "Drag 'n' drop images here, or click to select images"}
+        </Typography>
+        <Button variant="outlined" onClick={handleUpload} disabled={!files.length} sx={{ mt: 1 }}>
+            Upload
+        </Button>
+    </Box>
+    {errorMessage && <Typography variant="body3" sx={{ color: 'danger.fg', mt: 2 }}>{errorMessage}</Typography>}
+</Box>
+
     );
 };
 
