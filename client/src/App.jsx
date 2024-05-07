@@ -4,6 +4,7 @@ import SignUp from './components/RegisterForm';
 import HomePage from './components/HomePage';
 import ProtectedRoute from './components/ProtectedRoute';
 import Dashboard from './components/Dashboard';
+import SelectMode from './components/SelectMode';
 
 function App() {
   return (
@@ -12,6 +13,14 @@ function App() {
         <Route path="/" element={<HomePage />}/>
         <Route path="/login" element={<SignIn />} />
         <Route path="/register" element={<SignUp />} />
+        <Route
+          path="/selectmode"
+          element={
+            <ProtectedRoute>
+              <SelectMode />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/dashboard"
           element={

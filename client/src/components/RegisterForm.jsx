@@ -34,7 +34,7 @@ export default function SignUp() {
 
   useEffect(() => {
     if (isLoggedIn) {
-      navigate('/dashboard');
+      navigate('/selectmode');
     }
   }, [isLoggedIn, navigate]);
 

@@ -26,9 +26,9 @@ async function createBucketIfNotExists(bucketName) {
   }
 }
 
-exports.uploadImage = async (file, userId) => {
-    console.log("hii");
-    const uniqueFilename = `${uuidv4()}_${file.originalname}`;
+exports.uploadImage = async (mode, file, userId) => {
+    const folder = mode === 'public' ? 'public' : 'private';
+    const uniqueFilename = `${folder}/${uuidv4()}_${file.originalname}`;
     console.log(uniqueFilename, bucketName);
 
     try {
@@ -36,13 +36,13 @@ exports.uploadImage = async (file, userId) => {
             'Content-Type': file.mimetype
         });
 
-        const imageUrl = `https://${process.env.MINIO_END_POINT}:${process.env.MINIO_PORT}/${bucketName}/${uniqueFilename}`;
+        const imageUrl = `http://${process.env.MINIO_END_POINT}:${process.env.MINIO_PORT}/${bucketName}/${uniqueFilename}`;
 
         const image = new Image({
             filename: uniqueFilename,
             imageUrl: imageUrl,
             owner: userId,
-            mode: 'private',  
+            mode: mode,  
             status: 'pending'
         });
 
@@ -55,9 +55,16 @@ exports.uploadImage = async (file, userId) => {
     }
 };
 
-exports.fetchImages = async () => {
+exports.fetchImages = async (mode, userId) => {
     try {
-        const images = await Image.find({});
+        let images;
+        if (mode === "public") {
+            images = await Image.find({ mode: mode });
+        } else if (mode === "private") {
+            images = await Image.find({ owner: userId, mode: mode });
+        } else {
+            throw new Error("Invalid mode specified");
+        }
         if (images.length === 0) {
             throw { message: 'No images found', status: 404 };
         }

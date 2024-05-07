@@ -1,19 +1,20 @@
 const imageService = require('../services/imageService');
 
 exports.uploadImage = async (req, res) => {
+    const { mode } = req.query;
+    if (!mode) {
+        return res.status(400).send({ error: 'Mode parameter is required' });
+    }
+
     if (!req.files.length) {
         return res.status(400).send({ error: 'No files uploaded' });
     }
 
     try {
-        console.log("came here");
         const files = req.files
-        console.log(req.user._id)
         const results = await Promise.all(files.map(async file => {
-            console.log(file);
-            return await imageService.uploadImage(file, req.user._id);
+            return await imageService.uploadImage(mode, file, req.user._id);
         }));
-        console.log(results);
         res.status(201).send(results);
     } catch (error) {
         const status = error.status || 500;
@@ -22,8 +23,12 @@ exports.uploadImage = async (req, res) => {
 };
 
 exports.getImages = async (req, res) => {
+    const { mode } = req.query;
+    if (!mode) {
+        return res.status(400).send({ error: 'Mode parameter is required' });
+    }
     try {
-        const images = await imageService.fetchImages();
+        const images = await imageService.fetchImages(req.user._id, mode);
         res.status(200).send(images);
     } catch (error) {
         res.status(error.status || 500).send({ error: error.message });

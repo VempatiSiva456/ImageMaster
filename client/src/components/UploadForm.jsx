@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Box, Typography, Button, Grid } from '@mui/joy';
 import { useDropzone } from 'react-dropzone';
 
-const DropzoneComponent = () => {
+const DropzoneComponent = ({mode}) => {
     const [files, setFiles] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
+
+    console.log(mode);
 
     const handleUpload = async (uploadType) => {
         if (!files.length) {
@@ -18,7 +20,7 @@ const DropzoneComponent = () => {
         });
 
         try {
-            const response = await fetch("http://localhost:5000/api/images/upload", {
+            const response = await fetch(`http://localhost:5000/api/images/upload?mode=${mode}`, {
                 method: 'POST',
                 body: formData,
                 headers: {

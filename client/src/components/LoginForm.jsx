@@ -28,7 +28,7 @@ export default function SignIn() {
 
   useEffect(() => {
     if (isLoggedIn) {
-      navigate('/dashboard');
+      navigate('/selectmode');
     }
   }, [isLoggedIn, navigate]);
 
@@ -50,7 +50,7 @@ export default function SignIn() {
     event.preventDefault();
     try {
         await login(email, password);
-        navigate('/dashboard');
+        navigate('/selectmode');
     } catch (error) {
         console.error('Login error:', error.message);
         setError(error.message || 'Failed to login. Please check your credentials.');

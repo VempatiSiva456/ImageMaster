@@ -6,7 +6,8 @@ import UploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
 import Dropzone from './UploadForm';
 import { useAuth } from '../contexts/AuthContext';
 
-const Dashboard = () => {
+const Dashboard = ({mode}) => {
+  console.log(mode);
   const [open, setOpen] = useState(false);
   const { logout } = useAuth();
 
@@ -35,7 +36,7 @@ const Dashboard = () => {
       </Box>
       <Modal open={open} onClose={() => setOpen(false)} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <ModalDialog>
-          <Dropzone />
+          <Dropzone mode={mode}/>
         </ModalDialog>
       </Modal>
     </Box>
