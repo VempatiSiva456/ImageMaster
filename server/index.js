@@ -5,6 +5,8 @@ const cors = require('cors');
 require('dotenv').config();
 const authRoutes = require('./routes/authRoutes');
 const imageRoutes = require('./routes/imageRoutes');
+const domainRoutes = require('./routes/domainRoutes');
+const classRoutes = require('./routes/classRoutes');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -22,6 +24,8 @@ mongoose.connect(process.env.DB_CONNECTION_STRING)
 
 app.use('/api/auth', authRoutes);
 app.use('/api/images', imageRoutes);
+app.use('/api/domain', domainRoutes);
+app.use('/api/class', classRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
