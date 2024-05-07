@@ -1,31 +1,44 @@
-import React from 'react';
-import { AppBar, Toolbar, Typography, IconButton, Box, Container } from '@mui/material';
-import LogoutIcon from '@mui/icons-material/Logout';
+import React, { useState } from 'react';
+import { Grid, Box, Button, Breadcrumbs, Typography, Modal, ModalDialog } from '@mui/joy';
+import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
+import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
+import UploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
+import Dropzone from './UploadForm';
 import { useAuth } from '../contexts/AuthContext';
 
 const Dashboard = () => {
+  const [open, setOpen] = useState(false);
   const { logout } = useAuth();
 
   return (
-    <>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Dashboard
-          </Typography>
-          <IconButton color="inherit" onClick={logout}>
-            <LogoutIcon />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-      <Container maxWidth="lg">
-        <Box sx={{ my: 4 }}>
-          <Typography variant="body1" gutterBottom>
-            Welcome to your dashboard!
-          </Typography>
-        </Box>
-      </Container>
-    </>
+    <Box sx={{ display: 'flex', minHeight: '100vh', flexDirection: 'column' }}>
+      <Box sx={{ flexGrow: 1, p: 2 }}>
+        <Breadcrumbs separator={<ChevronRightRoundedIcon />} aria-label="breadcrumb">
+          <Button onClick={logout} startDecorator={<LogoutRoundedIcon />} variant="soft">
+            Logout
+          </Button>
+        </Breadcrumbs>
+        <Typography level="h4" component="h1" sx={{ mt: 2, mb: 1 }}>
+          Dashboard
+        </Typography>
+        <Grid container spacing={2} sx={{ mt: 1 }}>
+          <Grid item xs={6}>
+            <Button
+              onClick={() => setOpen(true)}
+              startDecorator={<UploadRoundedIcon />}
+              variant="outlined"
+            >
+              Upload Image
+            </Button>
+          </Grid>
+        </Grid>
+      </Box>
+      <Modal open={open} onClose={() => setOpen(false)} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <ModalDialog>
+          <Dropzone />
+        </ModalDialog>
+      </Modal>
+    </Box>
   );
 };
 

@@ -1,5 +1,7 @@
 node_modules/
 
+images/
+
 .env
 .env.local
 .env.development.local
