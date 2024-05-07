@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Box, Typography, Button, Grid } from '@mui/joy';
+import { Box, Typography, Button } from '@mui/joy';
 import { useDropzone } from 'react-dropzone';
 
-const DropzoneComponent = ({mode}) => {
+const DropzoneComponent = ({ mode }) => {
     const [files, setFiles] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -26,7 +26,7 @@ const DropzoneComponent = ({mode}) => {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
-                credentials:"include"
+                credentials: "include"
             });
             console.log(response);
 
@@ -57,38 +57,37 @@ const DropzoneComponent = ({mode}) => {
 
     return (
         <Box sx={{ p: 2 }}>
-    <Box
-        {...getRootProps()}
-        sx={{
-            p: 2,
-            border: '2px dashed',
-            borderColor: 'neutral.outlinedBorder',
-            bgcolor: 'background.body',
-            color: 'text.primary',
-            borderRadius: 2,
-            minHeight: 200,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            '&:hover': {
-                backgroundColor: 'background.level1',
-                borderColor: 'primary.outlinedHoverBorder'
-            }
-        }}
-    >
-        <input {...getInputProps()} />
-        <Typography variant="body2" sx={{ mb: 2 }}>
-            {isDragActive ? "Drop the images here ..." : files.length ? `Selected: ${files.map(file => file.name).join(', ')}` : "Drag 'n' drop images here, or click to select images"}
-        </Typography>
-        <Button variant="outlined" onClick={handleUpload} disabled={!files.length} sx={{ mt: 1 }}>
-            Upload
-        </Button>
-    </Box>
-    {errorMessage && <Typography variant="body3" sx={{ color: 'danger.fg', mt: 2 }}>{errorMessage}</Typography>}
-</Box>
-
+            <Box
+                {...getRootProps()}
+                sx={{
+                    p: 2,
+                    border: '2px dashed',
+                    borderColor: 'neutral.outlinedBorder',
+                    bgcolor: 'background.body',
+                    color: 'text.primary',
+                    borderRadius: 2,
+                    minHeight: 200,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    '&:hover': {
+                        backgroundColor: 'background.level1',
+                        borderColor: 'primary.outlinedHoverBorder'
+                    }
+                }}
+            >
+                <input {...getInputProps()} />
+                <Typography variant="body2" sx={{ mb: 2 }}>
+                    {isDragActive ? "Drop the images here ..." : files.length ? `Selected: ${files.map(file => file.name).join(', ')}` : "Drag 'n' drop images here, or click to select images"}
+                </Typography>
+            </Box>
+            <Button variant="outlined" onClick={handleUpload} disabled={!files.length} sx={{ mt: 2, width: 'calc(100%)' }}>
+                Upload
+            </Button>
+            {errorMessage && <Typography variant="body3" sx={{ color: 'danger.fg', mt: 2 }}>{errorMessage}</Typography>}
+        </Box>
     );
 };
 

@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Box, Button, Breadcrumbs, Typography, Modal, ModalDialog } from '@mui/joy';
+import { Grid, Box, Button, Typography, Table, TableBody, TableCell, TableContainer, TableRow, Paper, Modal, TableHead } from '@mui/material';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Pagination from '@mui/material/Pagination';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 import UploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
 import Dropzone from './UploadForm';
 import { useAuth } from '../contexts/AuthContext';
 
-const Dashboard = ({mode}) => {
+const Dashboard = ({ mode }) => {
   const [open, setOpen] = useState(false);
   const [images, setImages] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
   const { logout } = useAuth();
 
   useEffect(() => {
@@ -35,38 +39,70 @@ const Dashboard = ({mode}) => {
     fetchImages();
   }, [mode]);
 
+  const handleChangePage = (event, newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const currentImages = images.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', flexDirection: 'column' }}>
       <Box sx={{ flexGrow: 1, p: 2 }}>
-        <Breadcrumbs separator={<ChevronRightRoundedIcon />} aria-label="breadcrumb">
-          <Button onClick={logout} startDecorator={<LogoutRoundedIcon />} variant="soft">
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Breadcrumbs separator={<ChevronRightRoundedIcon />} aria-label="breadcrumb">
+            <Typography color="text.primary">Dashboard</Typography>
+          </Breadcrumbs>
+          <Button onClick={logout} startIcon={<LogoutRoundedIcon />} variant="contained">
             Logout
           </Button>
-        </Breadcrumbs>
-        <Typography level="h4" component="h1" sx={{ mt: 2, mb: 1 }}>
-          Dashboard
+        </Box>
+        <Typography variant="h4" sx={{ mt: 2, mb: 1 }}>
+          Image Management
         </Typography>
-        <Grid container spacing={2} sx={{ mt: 1 }}>
-          <Grid item xs={6}>
-            <Button
-              onClick={() => setOpen(true)}
-              startDecorator={<UploadRoundedIcon />}
-              variant="outlined"
-            >
-              Upload Image
-            </Button>
-          </Grid>
-          {images.map((img, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <img src={img.imageUrl} alt={img.filename} style={{ width: '100%' }} />
-            </Grid>
-          ))}
-        </Grid>
+        <Button
+          onClick={() => setOpen(true)}
+          startIcon={<UploadRoundedIcon />}
+          variant="contained"
+          sx={{ mb: 2 }}
+        >
+          Upload Image
+        </Button>
+        <TableContainer component={Paper} sx={{ border: 1, borderColor: 'divider' }}>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead sx={{ backgroundColor: 'primary.dark' }}>
+              <TableRow>
+                <TableCell align="left" style={{ color: 'white' }}>S.No.</TableCell>
+                <TableCell align="left" style={{ color: 'white' }}>File Name</TableCell>
+                <TableCell align="left" style={{ color: 'white' }}>Image</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {currentImages.map((img, index) => (
+                <TableRow key={index}>
+                  <TableCell align="left">
+                    {1 + index + (currentPage - 1) * pageSize}
+                  </TableCell>
+                  <TableCell align="left">
+                    {img.filename.substring(44)}
+                  </TableCell>
+                  <TableCell align="left">
+                    <img src={img.imageUrl} alt={img.filename.substring(44)} style={{ width: '100px', height: 'auto' }} />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <Pagination
+          count={Math.ceil(images.length / pageSize)}
+          page={currentPage}
+          onChange={handleChangePage}
+          color="primary"
+          sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}
+        />
       </Box>
       <Modal open={open} onClose={() => setOpen(false)} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <ModalDialog>
-          <Dropzone mode={mode}/>
-        </ModalDialog>
+        <Dropzone mode={mode}/>
       </Modal>
     </Box>
   );
