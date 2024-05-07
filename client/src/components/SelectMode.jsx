@@ -18,6 +18,11 @@ const SelectMode = () => {
             Join Private
           </Button>
         </Grid>
+        <Grid item xs={12} sm={12} md={6}>
+          <Button onClick={() => navigate("/create-classes")}>
+            Create Classes
+          </Button>
+        </Grid>
       </Grid>
     </div>
   );

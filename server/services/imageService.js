@@ -22,7 +22,7 @@ async function createBucketIfNotExists(bucketName) {
       await minioClient.makeBucket(bucketName);
     }
   } catch (error) {
-    throw error;
+    throw new Error(error);
   }
 }
 
@@ -90,7 +90,7 @@ exports.uploadImage = async (mode, file, userId) => {
     };
   } catch (error) {
     console.error("Error uploading image:", error);
-    throw { message: "Error uploading image", status: 500 };
+    throw new Error({ message: "Error uploading image", status: 500 });
   }
 };
 
@@ -105,7 +105,7 @@ exports.fetchImages = async (mode, userId) => {
       throw new Error("Invalid mode specified");
     }
     if (images.length === 0) {
-      throw { message: "No images found", status: 404 };
+      throw new Error({ message: "No images found", status: 404 });
     }
     return images.map((image) => ({
       imageUrl: image.imageUrl,
@@ -115,6 +115,6 @@ exports.fetchImages = async (mode, userId) => {
     }));
   } catch (error) {
     console.error("Error fetching images:", error);
-    throw { message: "Failed to retrieve images", status: error.status || 500 };
+    throw new Error({ message: "Failed to retrieve images", status: error.status || 500 });
   }
 };

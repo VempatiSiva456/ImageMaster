@@ -5,6 +5,7 @@ import HomePage from "./components/HomePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./components/Dashboard";
 import SelectMode from "./components/SelectMode";
+import AddClasses from "./components/AddClasses";
 
 function App() {
   return (
@@ -34,6 +35,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard mode={"private"} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/create-classes"
+          element={
+            <ProtectedRoute>
+              <AddClasses />
             </ProtectedRoute>
           }
         />

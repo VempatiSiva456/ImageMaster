@@ -21,3 +21,12 @@ exports.deleteDomain = async (req, res) => {
         res.status(500).send({ error: error.message });
     }
 };
+
+exports.getAllDomains = async (req, res) => {
+    try {
+        const domains = await Domain.find();
+        res.status(200).json(domains);
+    } catch (error) {
+        res.status(500).send({ error: 'Failed to fetch domains' });
+    }
+};

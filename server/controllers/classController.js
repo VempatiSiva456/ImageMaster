@@ -30,3 +30,12 @@ exports.deleteClass = async (req, res) => {
         res.status(500).send({ error: error.message });
     }
 };
+
+exports.getAllClasses = async (req, res) => {
+    try {
+        const classes = await Class.find();
+        res.status(200).json(classes);
+    } catch (error) {
+        res.status(500).send({ error: 'Failed to fetch classes' });
+    }
+};

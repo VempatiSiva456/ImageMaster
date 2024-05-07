@@ -13,7 +13,6 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(password);
     const result = await authService.login(email, password);
     res.cookie("token", result.token, {
       httpOnly: true,
@@ -31,7 +30,7 @@ exports.verifySession = async (req, res) => {
   try {
     const token = req.cookies.token;
     if (!token) {
-      throw { message: "Authentication token is missing", status: 401 };
+      throw new Error({ message: "Authentication token is missing", status: 401 });
     }
     const user = await authService.verifySession(token);
     res.json({ isLoggedIn: true, user });
