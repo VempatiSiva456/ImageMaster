@@ -16,8 +16,14 @@ const ImageSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
-    annotator: { type: mongoose.Schema.Types.ObjectId, ref: 'Tool_User' },
-    annotation: String,
+    annotator: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Tool_User' 
+    },
+    annotation: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Class'
+    },
     createdAt: { type: Date, default: Date.now }
 });
 

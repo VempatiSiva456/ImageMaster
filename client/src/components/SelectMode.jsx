@@ -7,7 +7,7 @@ const SelectMode = () => {
 
   return (
     <div>
-      <Grid container sx={{margin:"40vh"}}>
+      <Grid container sx={{ margin: "40vh" }}>
         <Grid item xs={12} sm={12} md={6}>
           <Button onClick={() => navigate("/public-dashboard")}>
             Join Public

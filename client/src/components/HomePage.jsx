@@ -16,38 +16,38 @@ import { createTheme, ThemeProvider, styled } from "@mui/material/styles";
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#1976d2", 
+      main: "#1976d2",
     },
     secondary: {
-      main: "#dc004e", 
+      main: "#dc004e",
     },
     background: {
-      default: "#e3f2fd", 
+      default: "#e3f2fd",
     },
   },
   typography: {
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
     h2: {
       fontWeight: 700,
-      fontSize: "2.5rem", 
+      fontSize: "2.5rem",
     },
     h5: {
-      fontSize: "1.2rem", 
+      fontSize: "1.2rem",
     },
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 8, 
+          borderRadius: 8,
         },
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          boxShadow: "0 2px 14px 0 rgba(0,0,0,0.10)", 
-          borderRadius: 12, 
+          boxShadow: "0 2px 14px 0 rgba(0,0,0,0.10)",
+          borderRadius: 12,
         },
       },
     },
@@ -64,7 +64,7 @@ const features = [];
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const matches = useMediaQuery(theme.breakpoints.up('sm'));
+  const matches = useMediaQuery(theme.breakpoints.up("sm"));
 
   const handleGetStartedClick = () => {
     navigate("/login");
@@ -87,7 +87,12 @@ export default function HomePage() {
           <Typography variant="h5" align="center" paragraph>
             The ultimate tool for easy and efficient image annotation.
           </Typography>
-          <Button variant="contained" color="primary" size="large" onClick={handleGetStartedClick}>
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            onClick={handleGetStartedClick}
+          >
             Get Started
           </Button>
         </Box>

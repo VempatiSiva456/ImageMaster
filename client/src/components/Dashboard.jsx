@@ -1,12 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { Grid, Box, Button, Typography, Table, TableBody, TableCell, TableContainer, TableRow, Paper, Modal, TableHead } from '@mui/material';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-import Pagination from '@mui/material/Pagination';
-import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
-import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
-import UploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
-import Dropzone from './UploadForm';
-import { useAuth } from '../contexts/AuthContext';
+import React, { useState, useEffect } from "react";
+import {
+  Grid,
+  Box,
+  Button,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Paper,
+  Modal,
+  TableHead,
+} from "@mui/material";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import Pagination from "@mui/material/Pagination";
+import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
+import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
+import UploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
+import Dropzone from "./UploadForm";
+import { useAuth } from "../contexts/AuthContext";
 
 const Dashboard = ({ mode }) => {
   const [open, setOpen] = useState(false);
@@ -18,20 +31,23 @@ const Dashboard = ({ mode }) => {
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/images/get?mode=${mode}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          credentials: "include"
-        });
+        const response = await fetch(
+          `http://localhost:5000/api/images/get?mode=${mode}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include",
+          }
+        );
         if (!response.ok) {
-          throw new Error('Failed to fetch images');
+          throw new Error("Failed to fetch images");
         }
         const data = await response.json();
         setImages(data);
       } catch (error) {
-        console.error('Error fetching images:', error);
+        console.error("Error fetching images:", error);
         setImages([]);
       }
     };
@@ -43,16 +59,28 @@ const Dashboard = ({ mode }) => {
     setCurrentPage(newPage);
   };
 
-  const currentImages = images.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const currentImages = images.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', flexDirection: 'column' }}>
+    <Box sx={{ display: "flex", minHeight: "100vh", flexDirection: "column" }}>
       <Box sx={{ flexGrow: 1, p: 2 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Breadcrumbs separator={<ChevronRightRoundedIcon />} aria-label="breadcrumb">
-            <Typography color="text.primary">Dashboard</Typography>
+          <Breadcrumbs
+            separator={<ChevronRightRoundedIcon />}
+            aria-label="breadcrumb"
+          >
+            <Typography color="text.primary">
+              {mode === "public" ? "Public" : "Private"} Dashboard
+            </Typography>
           </Breadcrumbs>
-          <Button onClick={logout} startIcon={<LogoutRoundedIcon />} variant="contained">
+          <Button
+            onClick={logout}
+            startIcon={<LogoutRoundedIcon />}
+            variant="contained"
+          >
             Logout
           </Button>
         </Box>
@@ -67,13 +95,25 @@ const Dashboard = ({ mode }) => {
         >
           Upload Image
         </Button>
-        <TableContainer component={Paper} sx={{ border: 1, borderColor: 'divider' }}>
+        <TableContainer
+          component={Paper}
+          sx={{ border: 1, borderColor: "divider" }}
+        >
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead sx={{ backgroundColor: 'primary.dark' }}>
+            <TableHead sx={{ backgroundColor: "primary.dark" }}>
               <TableRow>
-                <TableCell align="left" style={{ color: 'white' }}>S.No.</TableCell>
-                <TableCell align="left" style={{ color: 'white' }}>File Name</TableCell>
-                <TableCell align="left" style={{ color: 'white' }}>Image</TableCell>
+                <TableCell align="left" style={{ color: "white" }}>
+                  S.No.
+                </TableCell>
+                <TableCell align="left" style={{ color: "white" }}>
+                  File Name
+                </TableCell>
+                <TableCell align="left" style={{ color: "white" }}>
+                  Image
+                </TableCell>
+                <TableCell align="left" style={{ color: "white" }}>
+                  Status
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -83,11 +123,16 @@ const Dashboard = ({ mode }) => {
                     {1 + index + (currentPage - 1) * pageSize}
                   </TableCell>
                   <TableCell align="left">
-                    {img.filename.substring(44)}
+                    {img.filename.substring(mode === "public" ? 44 : 45)}
                   </TableCell>
                   <TableCell align="left">
-                    <img src={img.imageUrl} alt={img.filename.substring(44)} style={{ width: '100px', height: 'auto' }} />
+                    <img
+                      src={img.imageUrl}
+                      alt={img.filename.substring(44)}
+                      style={{ width: "100px", height: "auto" }}
+                    />
                   </TableCell>
+                  <TableCell align="left">{img.status}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -98,11 +143,15 @@ const Dashboard = ({ mode }) => {
           page={currentPage}
           onChange={handleChangePage}
           color="primary"
-          sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}
+          sx={{ mt: 2, display: "flex", justifyContent: "center" }}
         />
       </Box>
-      <Modal open={open} onClose={() => setOpen(false)} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Dropzone mode={mode}/>
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+      >
+        <Dropzone mode={mode} />
       </Modal>
     </Box>
   );
