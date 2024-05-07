@@ -36,3 +36,14 @@ exports.getImages = async (req, res) => {
     res.status(error.status || 500).send({ error: error.message });
   }
 };
+
+exports.updateImageClass = async (req, res) => {
+    try {
+        const imageId = req.params.imageId;
+        const classId = req.body.classId;
+        const updatedImage = await imageService.updateImageClass(imageId, classId, req.user._id);
+        res.status(200).json(updatedImage);
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
+};

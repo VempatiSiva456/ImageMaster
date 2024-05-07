@@ -108,6 +108,7 @@ exports.fetchImages = async (mode, userId) => {
       throw new Error({ message: "No images found", status: 404 });
     }
     return images.map((image) => ({
+      _id: image._id,
       imageUrl: image.imageUrl,
       filename: image.filename,
       status: image.status,
@@ -117,4 +118,16 @@ exports.fetchImages = async (mode, userId) => {
     console.error("Error fetching images:", error);
     throw new Error({ message: "Failed to retrieve images", status: error.status || 500 });
   }
+};
+
+exports.updateImageClass = async (imageId, classId, userId) => {
+  const updatedImage = await Image.findByIdAndUpdate(
+      imageId,
+      { annotation: classId, status: "annotated", annotator: userId },
+      { new: true, populate: 'annotation' } 
+  );
+  if (!updatedImage) {
+      throw new Error('Image not found or failed to update');
+  }
+  return updatedImage;
 };

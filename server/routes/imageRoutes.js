@@ -7,5 +7,6 @@ const auth = require('../middleware/authMiddleware');
 const router = express.Router();
 router.post('/upload', auth, upload.array('images', 10), imageController.uploadImage);
 router.get('/get', auth, imageController.getImages);
+router.put('/updateClass/:imageId', auth, imageController.updateImageClass);
 
 module.exports = router;
