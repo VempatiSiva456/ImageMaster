@@ -4,7 +4,7 @@ import { useDropzone } from "react-dropzone";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
 
-const DropzoneComponent = ({ mode }) => {
+const DropzoneComponent = ({ mode, onSuccess}) => {
   const [files, setFiles] = useState([]);
   const [alert, setAlert] = useState({ message: "", type: "info" });
 
@@ -40,6 +40,7 @@ const DropzoneComponent = ({ mode }) => {
       }
       setAlert({ message: "Images uploaded successfully.", type: "success" });
       setFiles([]);
+      onSuccess();
     } catch (error) {
       console.error("Error uploading images:", error.message);
       setAlert({

@@ -154,6 +154,11 @@ const Dashboard = ({ mode }) => {
     }
   };
 
+  const handleUploadSuccess = async () => {
+    const imageData = await fetchImages();
+    setImages(imageData);
+  };
+
   const showAlert = (message, type) => {
     setSnackbarMessage(message);
     setSnackbarType(type);
@@ -420,7 +425,7 @@ const Dashboard = ({ mode }) => {
         sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
       >
         <div>
-          <Dropzone mode={mode} />
+          <Dropzone mode={mode} onSuccess={handleUploadSuccess} />
         </div>
       </Modal>
     </Box>
