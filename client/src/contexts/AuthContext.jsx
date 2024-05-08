@@ -49,7 +49,6 @@ export const AuthProvider = ({ children }) => {
         credentials: "include",
         body: JSON.stringify({ email, password }),
       });
-      console.log(response);
       if (!response.ok) {
         throw new Error("Login Failed, Please check your credentials");
       }

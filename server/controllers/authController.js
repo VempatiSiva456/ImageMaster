@@ -14,7 +14,7 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const result = await authService.login(email, password);
-    res.cookie("token", result.token, {
+    res.cookie("token_tool_user", result.token, {
       httpOnly: true,
       sameSite: "strict",
       maxAge: 24 * 60 * 60 * 1000,
@@ -28,7 +28,7 @@ exports.login = async (req, res) => {
 
 exports.verifySession = async (req, res) => {
   try {
-    const token = req.cookies.token;
+    const token = req.cookies.token_tool_user;
     if (!token) {
       throw new Error({ message: "Authentication token is missing", status: 401 });
     }
@@ -41,6 +41,20 @@ exports.verifySession = async (req, res) => {
 };
 
 exports.logout = async (req, res) => {
-  res.clearCookie("token", { httpOnly: true, sameSite: "strict" });
+  res.clearCookie("token_tool_user", { httpOnly: true, sameSite: "strict" });
   res.json({ message: "Logged out successfully" });
 };
+
+exports.getUsers = async (req, res) => {
+  try {
+    const all_users = await authService.getUsers();
+    if (!all_users.length)
+    {
+      throw new Error({ message: "No users found", status: 401 });
+    }
+    res.status(200).json({userResponse: all_users, current_user: req.user._id});
+  }
+  catch (error){
+    res.status(error.status || 500).send({ error: error.message });
+  }
+}

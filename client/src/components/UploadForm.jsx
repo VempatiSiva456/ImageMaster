@@ -1,16 +1,19 @@
 import React, { useState } from "react";
 import { Box, Typography, Button } from "@mui/joy";
 import { useDropzone } from "react-dropzone";
+import Alert from "@mui/material/Alert";
+import Stack from "@mui/material/Stack";
 
 const DropzoneComponent = ({ mode }) => {
   const [files, setFiles] = useState([]);
-  const [errorMessage, setErrorMessage] = useState("");
-
-  console.log(mode);
+  const [alert, setAlert] = useState({ message: "", type: "info" });
 
   const handleUpload = async () => {
     if (!files.length) {
-      setErrorMessage("Please select images to upload.");
+      if (!files.length) {
+        setAlert({ message: "Please select images to upload.", type: "error" });
+        return;
+      }
       return;
     }
 
@@ -31,26 +34,31 @@ const DropzoneComponent = ({ mode }) => {
           credentials: "include",
         }
       );
-      console.log(response);
 
       if (!response.ok) {
         throw new Error("Failed to upload images.");
       }
-      console.log("Images uploaded successfully.");
+      setAlert({ message: "Images uploaded successfully.", type: "success" });
       setFiles([]);
-      setErrorMessage("");
     } catch (error) {
       console.error("Error uploading images:", error.message);
-      setErrorMessage("Error uploading images. Please try again.");
+      setAlert({
+        message: "Error uploading images. Please try again.",
+        type: "error",
+      });
     }
   };
 
   const onDrop = (acceptedFiles) => {
     if (files.length + acceptedFiles.length > 10) {
-      setErrorMessage("You can only upload up to 10 files.");
+      setAlert({
+        message: "You can only upload up to 10 files only at a time.",
+        type: "error",
+      });
       return;
     }
     setFiles((prev) => [...prev, ...acceptedFiles]);
+    setAlert({ message: "", type: "info" });
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -98,10 +106,10 @@ const DropzoneComponent = ({ mode }) => {
       >
         Upload
       </Button>
-      {errorMessage && (
-        <Typography variant="body3" sx={{ color: "danger.fg", mt: 2 }}>
-          {errorMessage}
-        </Typography>
+      {alert.message && (
+        <Stack sx={{ width: "100%", mt: 2 }}>
+          <Alert severity={alert.type}>{alert.message}</Alert>
+        </Stack>
       )}
     </Box>
   );

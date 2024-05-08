@@ -34,3 +34,17 @@ exports.verifySession = async (token) => {
   }
   return user;
 };
+
+exports.getUsers = async () => {
+  try {
+    const all_users = await User.find();
+    if (!all_users.length){
+      throw new Error({ message: "No users found", status: 401 });
+    }
+    return all_users;
+  }
+  catch (error){
+    console.error("Error fetching users:", error);
+    throw new Error({ message: "Failed to retrieve users", status: error.status || 500 });
+  }
+}

@@ -66,7 +66,7 @@ exports.uploadImage = async (mode, file, userId) => {
       "Content-Type": file.mimetype,
     });
 
-    const expiry = 24 * 60 * 60; // URL valid for 24 hours
+    const expiry = 6 * 24 * 60 * 60; // URL valid for 6 days
     const imageUrl = await generatePresignedUrl(
       uniqueFilename,
       bucketName,
@@ -113,6 +113,7 @@ exports.fetchImages = async (mode, userId) => {
       filename: image.filename,
       status: image.status,
       annotator: image.annotator,
+      annotation: image.annotation
     }));
   } catch (error) {
     console.error("Error fetching images:", error);

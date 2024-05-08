@@ -6,9 +6,13 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./components/Dashboard";
 import SelectMode from "./components/SelectMode";
 import AddClasses from "./components/AddClasses";
+import { CssBaseline, Box } from '@mui/material';
 
 function App() {
   return (
+    <>
+    <CssBaseline />
+    <Box sx={{ bgcolor: '#FFFFFF', minHeight: '100vh' }}>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -48,6 +52,8 @@ function App() {
         />
       </Routes>
     </BrowserRouter>
+    </Box>
+    </>
   );
 }
 

@@ -84,8 +84,6 @@ export default function SignUp() {
       if (!response.ok) {
         throw new Error(data.error || "Failed to register");
       }
-
-      console.log("Registration successful", data);
       navigate("/login");
     } catch (error) {
       console.error("Registration error:", error.message);
@@ -115,7 +113,7 @@ export default function SignUp() {
             alignItems: "center",
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+          <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">

@@ -251,7 +251,7 @@ const AddClasses = () => {
         {domains.map((domain) => (
           <Box key={domain._id} sx={{ mt: 4 }}>
             <Typography variant="h6" sx={{ color: "#1976d2" }}>
-              {domain.name}
+              {domain.name} ({domain.classes.length} Classes)
             </Typography>
             <List sx={{width: "80%"}}>
               {!domain.classes.length ? (
