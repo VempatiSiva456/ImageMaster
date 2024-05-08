@@ -313,6 +313,7 @@ const Dashboard = ({ mode }) => {
                       <>
                         {classes.find((cls) => cls._id === img.annotation)
                           ?.name || "Class not found"}
+                        {img.annotator === currentUser &&(
                         <Button
                           variant="outlined"
                           onClick={() =>
@@ -322,6 +323,7 @@ const Dashboard = ({ mode }) => {
                         >
                           Change
                         </Button>
+                        )}
                       </>
                     ) : (
                       <Select
