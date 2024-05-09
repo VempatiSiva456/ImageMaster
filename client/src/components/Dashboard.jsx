@@ -22,6 +22,7 @@ import {
   Toolbar,
   Select,
   MenuItem,
+  IconButton
 } from "@mui/material";
 import Pagination from "@mui/material/Pagination";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
@@ -31,6 +32,9 @@ import { useNavigate } from "react-router-dom";
 import Dropzone from "./UploadForm";
 import { useAuth } from "../contexts/AuthContext";
 import MuiAlert from "@mui/material/Alert";
+import EditIcon from '@mui/icons-material/Edit';
+import CancelIcon from '@mui/icons-material/Cancel';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const Dashboard = ({ mode }) => {
   const [open, setOpen] = useState(false);
@@ -154,6 +158,33 @@ const Dashboard = ({ mode }) => {
     }
   };
 
+  const removeClassAssignment = async (imageId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/images/removeClass/${imageId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          credentials: "include",
+        }
+      );
+      if (!response.ok) throw new Error("Failed to remove class assignment");
+      showAlert("Class assignment removed successfully", "success");
+      const updatedImages = images.map((img) =>
+        img._id === imageId
+          ? { ...img, annotation: null, annotator: null, status: "pending" }
+          : img
+      );
+      setImages(updatedImages);
+    } catch (error) {
+      console.error("Error removing class assignment:", error);
+      showAlert("Error removing class assignment", "error");
+    }
+  };
+
   const handleUploadSuccess = async () => {
     const imageData = await fetchImages();
     setImages(imageData);
@@ -185,10 +216,10 @@ const Dashboard = ({ mode }) => {
       <AppBar position="static" sx={{ backgroundColor: "primary" }}>
         <Toolbar>
           <Button
-            startIcon={<ArrowBackIosNewRoundedIcon sx={{ color: "blue" }} />}
+            startIcon={<ArrowBackIosNewRoundedIcon sx={{ color: "primary.main" }} />}
             onClick={() => navigate("/selectmode")}
             variant="contained"
-            sx={{ marginRight: 1, backgroundColor: "white", color: "blue" }}
+            sx={{ marginRight: 1, backgroundColor: "white", color: "primary.main" }}
           >
             Back
           </Button>
@@ -201,9 +232,9 @@ const Dashboard = ({ mode }) => {
           </Typography>
           <Button
             onClick={logout}
-            startIcon={<LogoutRoundedIcon sx={{ color: "blue" }} />}
+            startIcon={<LogoutRoundedIcon sx={{ color: "primary.main" }} />}
             variant="contained"
-            sx={{ backgroundColor: "white", color: "blue" }}
+            sx={{ backgroundColor: "white", color: "primary.main" }}
           >
             Logout
           </Button>
@@ -314,15 +345,22 @@ const Dashboard = ({ mode }) => {
                         {classes.find((cls) => cls._id === img.annotation)
                           ?.name || "Class not found"}
                         {img.annotator === currentUser &&(
-                        <Button
-                          variant="outlined"
-                          onClick={() =>
-                            setEditMode({ ...editMode, [img._id]: true })
-                          }
-                          sx={{ ml: 1, height: "30px", width: "15vh"}}
-                        >
-                          Change
-                        </Button>
+                        <>
+                        <IconButton
+                      aria-label="edit"
+                      onClick={() =>
+                        setEditMode({ ...editMode, [img._id]: true })
+                      }
+                    >
+                      <EditIcon sx={{ml:1, color: "primary.main"}}/>
+                    </IconButton>
+                    <IconButton
+                      aria-label="delete"
+                      onClick={() => removeClassAssignment(img._id)}
+                    >
+                      <DeleteIcon sx={{ml:1, color: "black"}} />
+                    </IconButton>
+                      </>
                         )}
                       </>
                     ) : (
@@ -344,7 +382,7 @@ const Dashboard = ({ mode }) => {
                           },
                         }}
                       >
-                        <MenuItem value="">Select Class</MenuItem>
+                        <MenuItem value="" sx={{color:"grey"}}>Select Class</MenuItem>
                         {classes.map((cls) => (
                           <MenuItem key={cls._id} value={cls._id}>
                             {cls.name}
@@ -381,19 +419,18 @@ const Dashboard = ({ mode }) => {
                       Assign
                     </Button>
                     {editMode[img._id] && (
-                      <Button
-                        variant="outlined"
-                        onClick={() => {
-                          setEditMode({ ...editMode, [img._id]: false });
-                          setSelectedClasses({
-                            ...selectedClasses,
-                            [img._id]: "",
-                          });
-                        }}
-                        sx={{ ml: 1, height: "30px", width: "15vh"}}
-                      >
-                        Cancel
-                      </Button>
+                      <IconButton
+                      aria-label="cancel"
+                      onClick={() => {
+                        setEditMode({ ...editMode, [img._id]: false });
+                        setSelectedClasses({
+                          ...selectedClasses,
+                          [img._id]: "",
+                        });
+                      }}
+                    >
+                      <CancelIcon sx={{ ml: 1, color:"black"}}/>
+                    </IconButton>
                     )}
                   </TableCell>
                 </TableRow>

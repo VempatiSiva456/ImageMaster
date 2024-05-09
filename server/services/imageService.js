@@ -132,3 +132,14 @@ exports.updateImageClass = async (imageId, classId, userId) => {
   }
   return updatedImage;
 };
+
+exports.removeImageClass = async (imageId) => {
+  const updatedImage = await Image.findByIdAndUpdate(
+      imageId,
+      { annotation: null, status: "pending", annotator: null } 
+  );
+  if (!updatedImage) {
+      throw new Error('Image not found or failed to remove class');
+  }
+  return updatedImage;
+};
