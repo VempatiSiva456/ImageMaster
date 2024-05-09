@@ -22,7 +22,8 @@ import {
   Toolbar,
   Select,
   MenuItem,
-  IconButton
+  IconButton,
+  Chip
 } from "@mui/material";
 import Pagination from "@mui/material/Pagination";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
@@ -197,6 +198,15 @@ const Dashboard = ({ mode }) => {
     setTimeout(() => setSnackbarOpen(false), 1000);
   };
 
+  const getStatusChip = (status) => {
+    if (status === "annotated") {
+      return <Chip label="Annotated" color="success" />;
+    } else if (status === "pending") {
+      return <Chip label="Pending" color="warning" />;
+    }
+    return <Chip label={status} />;
+  };
+
   const filteredImages = images.filter((img) => {
     const classMatch = classes
       .find((cls) => cls._id === img.annotation)
@@ -295,29 +305,29 @@ const Dashboard = ({ mode }) => {
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead sx={{ backgroundColor: "#1976d2" }}>
               <TableRow>
-                <TableCell align="left" style={{ color: "white" }}>
+                <TableCell align="left" style={{ color: "white", width: "5%" }}>
                   S.No.
                 </TableCell>
-                <TableCell align="left" style={{ color: "white" }}>
+                <TableCell align="left" style={{ color: "white", width: "20%" }}>
                   File Name
                 </TableCell>
-                <TableCell align="left" style={{ color: "white" }}>
+                <TableCell align="left" style={{ color: "white", width: "15%" }}>
                   Image
                 </TableCell>
-                <TableCell align="left" style={{ color: "white" }}>
+                <TableCell align="left" style={{ color: "white", width: "8%" }}>
                   Status
                 </TableCell>
-                <TableCell align="left" style={{ color: "white" }}>
+                <TableCell align="left" style={{ color: "white", width: "25%"}}>
                   Annotation
                 </TableCell>
                 {mode === "public" ? (
-                  <TableCell align="left" style={{ color: "white" }}>
+                  <TableCell align="left" style={{ color: "white", width: "15%" }}>
                     Annotator
                   </TableCell>
                 ) : (
                   ""
                 )}
-                <TableCell align="left" style={{ color: "white" }}>
+                <TableCell align="left" style={{ color: "white", width: "12%" }}>
                   Assign
                 </TableCell>
               </TableRow>
@@ -338,7 +348,7 @@ const Dashboard = ({ mode }) => {
                       style={{ width: "100px", height: "auto" }}
                     />
                   </TableCell>
-                  <TableCell>{img.status}</TableCell>
+                  <TableCell>{getStatusChip(img.status)}</TableCell>
                   <TableCell>
                     {img.status === "annotated" && !editMode[img._id] ? (
                       <>
