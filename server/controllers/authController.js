@@ -30,7 +30,7 @@ exports.verifySession = async (req, res) => {
   try {
     const token = req.cookies.token_tool_user;
     if (!token) {
-      throw new Error({ message: "Authentication token is missing", status: 401 });
+      throw new Error("Authentication token is missing");
     }
     const user = await authService.verifySession(token);
     res.json({ isLoggedIn: true, user });
@@ -50,7 +50,7 @@ exports.getUsers = async (req, res) => {
     const all_users = await authService.getUsers();
     if (!all_users.length)
     {
-      throw new Error({ message: "No users found", status: 401 });
+      throw new Error("No users found");
     }
     res.status(200).json({userResponse: all_users, current_user: req.user._id});
   }

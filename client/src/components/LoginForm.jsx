@@ -64,7 +64,7 @@ export default function SignIn() {
       await login(email, password);
       navigate("/selectmode");
     } catch (error) {
-      console.error("Login error:", error.message);
+      console.error("Login error:", error);
       setError(
         error.message || "Failed to login. Please check your credentials."
       );

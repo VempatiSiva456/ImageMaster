@@ -19,15 +19,15 @@ export const AuthProvider = ({ children }) => {
         }
       );
 
+      const data = await response.json();
       if (response.ok) {
-        const data = await response.json();
         setIsLoggedIn(data.isLoggedIn);
         if (data.isLoggedIn) {
           localStorage.setItem("role", data.user.role);
           setUserRole(data.user.role);
         }
       } else {
-        throw new Error("Session verification failed");
+        throw new Error(data.error);
       }
     } catch (error) {
       console.error(error);
@@ -57,14 +57,14 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({ email, password }),
       });
 
+      const data = await response.json();
       if (response.ok) {
-        const data = await response.json();
         setIsLoggedIn(true);
         localStorage.setItem("isLoggedIn", true);
         localStorage.setItem("role", data.user.role);
         setUserRole(data.user.role);
       } else {
-        throw new Error("Login Failed, Please check your credentials");
+        throw new Error(data.error);
       }
     } catch (error) {
       console.error("Login error:", error);

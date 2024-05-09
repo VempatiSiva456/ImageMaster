@@ -92,7 +92,7 @@ exports.uploadImage = async (mode, file, userId) => {
     };
   } catch (error) {
     console.error("Error uploading image:", error);
-    throw new Error({ message: "Error uploading image", status: 500 });
+    throw new Error("Error uploading image");
   }
 };
 
@@ -107,7 +107,7 @@ exports.fetchImages = async (mode, userId) => {
       throw new Error("Invalid mode specified");
     }
     if (images.length === 0) {
-      throw new Error({ message: "No images found", status: 404 });
+      throw new Error("No images found");
     }
     return images.map((image) => ({
       _id: image._id,
@@ -119,7 +119,7 @@ exports.fetchImages = async (mode, userId) => {
     }));
   } catch (error) {
     console.error("Error fetching images:", error);
-    throw new Error({ message: "Failed to retrieve images", status: error.status || 500 });
+    throw new Error("Failed to retrieve images");
   }
 };
 
