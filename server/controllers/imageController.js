@@ -57,3 +57,14 @@ exports.removeImageClass = async (req, res) => {
       res.status(500).send({ error: error.message });
   }
 };
+
+exports.updateBulkImagesClass = async (req, res) => {
+  try {
+      const imageIds = req.body.imageIds;
+      const classId = req.body.classId;
+      const updatedImages = await imageService.updateBulkImagesClass(imageIds, classId, req.user._id);
+      res.status(200).json(updatedImages);
+  } catch (error) {
+      res.status(500).send({ error: error.message });
+  }
+};

@@ -1,7 +1,9 @@
 const Minio = require("minio");
 const Image = require("../models/Image");
 const { v4: uuidv4 } = require("uuid");
+const mongoose = require("mongoose");
 require("dotenv").config();
+const { ObjectId } = mongoose.Types;
 
 const minioClient = new Minio.Client({
   endPoint: process.env.MINIO_END_POINT,
@@ -142,4 +144,29 @@ exports.removeImageClass = async (imageId) => {
       throw new Error('Image not found or failed to remove class');
   }
   return updatedImage;
+};
+
+exports.updateBulkImagesClass = async (imageIds, classId, userId) => {
+  try {
+    const objectIds = imageIds.map(id => new ObjectId(id));
+
+    const updatedImages = await Image.updateMany(
+      { _id: { $in: objectIds } }, 
+      {
+        $set: {
+          annotation: classId, 
+          annotator: userId,   
+          status: 'annotated'  
+        }
+      },
+      { new: true }
+    );
+
+    const updatedDocs = await Image.find({ _id: { $in: objectIds } });
+
+    return updatedDocs;
+  } catch (error) {
+    console.error('Error updating bulk images:', error);
+    throw error;
+  }
 };

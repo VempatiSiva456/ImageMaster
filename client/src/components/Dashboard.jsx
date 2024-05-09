@@ -23,7 +23,8 @@ import {
   Select,
   MenuItem,
   IconButton,
-  Chip
+  Chip,
+  Checkbox,
 } from "@mui/material";
 import Pagination from "@mui/material/Pagination";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
@@ -33,9 +34,9 @@ import { useNavigate } from "react-router-dom";
 import Dropzone from "./UploadForm";
 import { useAuth } from "../contexts/AuthContext";
 import MuiAlert from "@mui/material/Alert";
-import EditIcon from '@mui/icons-material/Edit';
-import CancelIcon from '@mui/icons-material/Cancel';
-import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from "@mui/icons-material/Edit";
+import CancelIcon from "@mui/icons-material/Cancel";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const Dashboard = ({ mode }) => {
   const [open, setOpen] = useState(false);
@@ -51,6 +52,8 @@ const Dashboard = ({ mode }) => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarType, setSnackbarType] = useState("success");
+  const [selectedImages, setSelectedImages] = useState(new Set());
+  const [bulkClass, setBulkClass] = useState("");
 
   const navigate = useNavigate();
   const pageSize = 10;
@@ -63,7 +66,7 @@ const Dashboard = ({ mode }) => {
   const fetchClassesAndImagesAndUsers = async () => {
     const classResponse = await fetchClasses();
     const imageResponse = await fetchImages();
-    const {userResponse, current_user} = await fetchUsers();
+    const { userResponse, current_user } = await fetchUsers();
     setClasses(classResponse);
     setImages(imageResponse);
     setUsers(userResponse);
@@ -125,6 +128,18 @@ const Dashboard = ({ mode }) => {
     setSelectedClasses((prev) => ({ ...prev, [imageId]: classId }));
   };
 
+  const handleSelectImage = (imageId) => {
+    setSelectedImages((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(imageId)) {
+        newSet.delete(imageId);
+      } else {
+        newSet.add(imageId);
+      }
+      return newSet;
+    });
+  };
+
   const submitClassAssignment = async (imageId, classId, userId) => {
     if (!classId) {
       showAlert("Please select a class to assign.", "error");
@@ -147,12 +162,20 @@ const Dashboard = ({ mode }) => {
       showAlert("Class assigned successfully", "success");
       const updatedImages = images.map((img) =>
         img._id === imageId
-          ? { ...img, annotation: classId, status: "annotated", annotator: userId }
+          ? {
+              ...img,
+              annotation: classId,
+              status: "annotated",
+              annotator: userId,
+            }
           : img
       );
       setImages(updatedImages);
       setSelectedClasses((prev) => ({ ...prev, [imageId]: "" }));
       setEditMode((prev) => ({ ...prev, [imageId]: false }));
+      setSelectedImages(
+        new Set(Array.from(selectedImages).filter((id) => id !== imageId))
+      );
     } catch (error) {
       console.error("Error assigning class:", error);
       showAlert("Error assigning class", "error");
@@ -183,6 +206,52 @@ const Dashboard = ({ mode }) => {
     } catch (error) {
       console.error("Error removing class assignment:", error);
       showAlert("Error removing class assignment", "error");
+    }
+  };
+
+  const bulkAssignClass = async () => {
+    if (!bulkClass) {
+      showAlert(
+        "Please select a class to assign to all selected images.",
+        "error"
+      );
+      return;
+    }
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/images/updateBulkClass`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            imageIds: Array.from(selectedImages),
+            classId: bulkClass,
+          }),
+          credentials: "include",
+        }
+      );
+      if (!response.ok) throw new Error("Failed to bulk assign class");
+      showAlert("Class assigned to selected images successfully", "success");
+
+      const updatedImages = images.map((img) =>
+        selectedImages.has(img._id)
+          ? {
+              ...img,
+              annotation: bulkClass,
+              status: "annotated",
+              annotator: currentUser,
+            }
+          : img
+      );
+      setImages(updatedImages);
+      setSelectedClasses({});
+      setSelectedImages(new Set());
+    } catch (error) {
+      console.error("Error bulk assigning class:", error);
+      showAlert("Error bulk assigning class", "error");
     }
   };
 
@@ -226,10 +295,16 @@ const Dashboard = ({ mode }) => {
       <AppBar position="static" sx={{ backgroundColor: "primary" }}>
         <Toolbar>
           <Button
-            startIcon={<ArrowBackIosNewRoundedIcon sx={{ color: "primary.main" }} />}
+            startIcon={
+              <ArrowBackIosNewRoundedIcon sx={{ color: "primary.main" }} />
+            }
             onClick={() => navigate("/selectmode")}
             variant="contained"
-            sx={{ marginRight: 1, backgroundColor: "white", color: "primary.main" }}
+            sx={{
+              marginRight: 1,
+              backgroundColor: "white",
+              color: "primary.main",
+            }}
           >
             Back
           </Button>
@@ -268,13 +343,42 @@ const Dashboard = ({ mode }) => {
           >
             Upload Image
           </Button>
-          <TextField
-            label="Search by Class Name"
-            variant="outlined"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            sx={{ width: "25%" }}
-          />
+          <Box flexDirection={"column"}>
+            <TextField
+              label="Search by Class Name"
+              variant="outlined"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              sx={{ width: "60%" }}
+            />
+            <Box sx={{mt:1}}>
+              <Select
+                value={bulkClass}
+                onChange={(e) => setBulkClass(e.target.value)}
+                displayEmpty
+                sx={{ mr: 2, width: "200px" }}
+                size="small"
+              >
+                <MenuItem value="">
+                  <em>Select Class for Bulk Assign</em>
+                </MenuItem>
+                {classes.map((cls) => (
+                  <MenuItem key={cls._id} value={cls._id}>
+                    {cls.name}
+                  </MenuItem>
+                ))}
+              </Select>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={bulkAssignClass}
+                disabled={selectedImages.size === 0 || !bulkClass}
+                size="small"
+              >
+                Assign to Selected
+              </Button>
+            </Box>
+          </Box>
         </Box>
         <FormControl component="fieldset">
           <FormLabel component="legend">Status Filter</FormLabel>
@@ -305,36 +409,86 @@ const Dashboard = ({ mode }) => {
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead sx={{ backgroundColor: "#1976d2" }}>
               <TableRow>
-                <TableCell align="left" style={{ color: "white", width: "5%" }}>
+                <TableCell
+                  align="center"
+                  style={{ color: "white", width: "3%" }}
+                >
+                  <Checkbox
+                    indeterminate={
+                      selectedImages.size > 0 &&
+                      selectedImages.size < currentImages.length
+                    }
+                    checked={
+                      currentImages.length > 0 &&
+                      selectedImages.size === currentImages.length
+                    }
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        const newSelectedImages = new Set(
+                          currentImages
+                            .filter((img) => img.status === "pending")
+                            .map((img) => img._id)
+                        );
+                        setSelectedImages(newSelectedImages);
+                      } else {
+                        setSelectedImages(new Set());
+                      }
+                    }}
+                    color="default"
+                  />
+                </TableCell>
+                <TableCell align="left" style={{ color: "white", width: "2%" }}>
                   S.No.
                 </TableCell>
-                <TableCell align="left" style={{ color: "white", width: "20%" }}>
+                <TableCell
+                  align="left"
+                  style={{ color: "white", width: "20%" }}
+                >
                   File Name
                 </TableCell>
-                <TableCell align="left" style={{ color: "white", width: "15%" }}>
+                <TableCell
+                  align="left"
+                  style={{ color: "white", width: "15%" }}
+                >
                   Image
                 </TableCell>
                 <TableCell align="left" style={{ color: "white", width: "8%" }}>
                   Status
                 </TableCell>
-                <TableCell align="left" style={{ color: "white", width: "25%"}}>
+                <TableCell
+                  align="left"
+                  style={{ color: "white", width: "25%" }}
+                >
                   Annotation
                 </TableCell>
                 {mode === "public" ? (
-                  <TableCell align="left" style={{ color: "white", width: "15%" }}>
+                  <TableCell
+                    align="left"
+                    style={{ color: "white", width: "15%" }}
+                  >
                     Annotator
                   </TableCell>
                 ) : (
                   ""
                 )}
-                <TableCell align="left" style={{ color: "white", width: "12%" }}>
+                <TableCell
+                  align="left"
+                  style={{ color: "white", width: "12%" }}
+                >
                   Assign
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {currentImages.map((img, index) => (
-                <TableRow key={index}>
+                <TableRow key={index} hover>
+                  <TableCell padding="checkbox">
+                    <Checkbox
+                      checked={selectedImages.has(img._id)}
+                      onChange={() => handleSelectImage(img._id)}
+                      disabled={img.status !== "pending"}
+                    />
+                  </TableCell>
                   <TableCell>
                     {1 + index + (currentPage - 1) * pageSize}
                   </TableCell>
@@ -354,23 +508,23 @@ const Dashboard = ({ mode }) => {
                       <>
                         {classes.find((cls) => cls._id === img.annotation)
                           ?.name || "Class not found"}
-                        {img.annotator === currentUser &&(
-                        <>
-                        <IconButton
-                      aria-label="edit"
-                      onClick={() =>
-                        setEditMode({ ...editMode, [img._id]: true })
-                      }
-                    >
-                      <EditIcon sx={{ml:1, color: "primary.main"}}/>
-                    </IconButton>
-                    <IconButton
-                      aria-label="delete"
-                      onClick={() => removeClassAssignment(img._id)}
-                    >
-                      <DeleteIcon sx={{ml:1, color: "black"}} />
-                    </IconButton>
-                      </>
+                        {img.annotator === currentUser && (
+                          <>
+                            <IconButton
+                              aria-label="edit"
+                              onClick={() =>
+                                setEditMode({ ...editMode, [img._id]: true })
+                              }
+                            >
+                              <EditIcon sx={{ ml: 1, color: "primary.main" }} />
+                            </IconButton>
+                            <IconButton
+                              aria-label="delete"
+                              onClick={() => removeClassAssignment(img._id)}
+                            >
+                              <DeleteIcon sx={{ ml: 1, color: "black" }} />
+                            </IconButton>
+                          </>
                         )}
                       </>
                     ) : (
@@ -392,7 +546,9 @@ const Dashboard = ({ mode }) => {
                           },
                         }}
                       >
-                        <MenuItem value="" sx={{color:"grey"}}>Select Class</MenuItem>
+                        <MenuItem value="" sx={{ color: "grey" }}>
+                          Select Class
+                        </MenuItem>
                         {classes.map((cls) => (
                           <MenuItem key={cls._id} value={cls._id}>
                             {cls.name}
@@ -424,23 +580,23 @@ const Dashboard = ({ mode }) => {
                         setEditMode({ ...editMode, [img._id]: false });
                       }}
                       disabled={!selectedClasses[img._id]}
-                      sx={{ ml: 1, height: "30px", width: "15vh"}}
+                      sx={{ ml: 1, height: "30px", width: "15vh" }}
                     >
                       Assign
                     </Button>
                     {editMode[img._id] && (
                       <IconButton
-                      aria-label="cancel"
-                      onClick={() => {
-                        setEditMode({ ...editMode, [img._id]: false });
-                        setSelectedClasses({
-                          ...selectedClasses,
-                          [img._id]: "",
-                        });
-                      }}
-                    >
-                      <CancelIcon sx={{ ml: 1, color:"black"}}/>
-                    </IconButton>
+                        aria-label="cancel"
+                        onClick={() => {
+                          setEditMode({ ...editMode, [img._id]: false });
+                          setSelectedClasses({
+                            ...selectedClasses,
+                            [img._id]: "",
+                          });
+                        }}
+                      >
+                        <CancelIcon sx={{ ml: 1, color: "black" }} />
+                      </IconButton>
                     )}
                   </TableCell>
                 </TableRow>
