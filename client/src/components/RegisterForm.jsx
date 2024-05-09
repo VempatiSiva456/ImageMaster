@@ -94,7 +94,7 @@ export default function SignUp() {
       navigate("/login");
     } catch (error) {
       console.error("Registration error:", error.message);
-      setErrorMessage(error.message);
+      setErrorMessage("Email Already exists");
     }
   };
 
