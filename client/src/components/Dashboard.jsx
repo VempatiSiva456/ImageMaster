@@ -25,6 +25,9 @@ import {
   IconButton,
   Chip,
   Checkbox,
+  Grid,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import Pagination from "@mui/material/Pagination";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
@@ -37,6 +40,7 @@ import MuiAlert from "@mui/material/Alert";
 import EditIcon from "@mui/icons-material/Edit";
 import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteIcon from "@mui/icons-material/Delete";
+import DownloadIcon from '@mui/icons-material/Download';
 
 const Dashboard = ({ mode }) => {
   const [open, setOpen] = useState(false);
@@ -58,6 +62,9 @@ const Dashboard = ({ mode }) => {
   const navigate = useNavigate();
   const pageSize = 10;
   const { logout } = useAuth();
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     fetchClassesAndImagesAndUsers();
@@ -260,6 +267,36 @@ const Dashboard = ({ mode }) => {
     setImages(imageData);
   };
 
+  const downloadAnnotatedImagesInfo = () => {
+    const annotatedImages = images.filter((img) => img.status === "annotated");
+    if (!annotatedImages.length) {
+      showAlert("No images are annotated yet", "error");
+    } else {
+      const content = annotatedImages
+        .map((img) => {
+          const className =
+            classes.find((cls) => cls._id === img.annotation)?.name ||
+            "No Class Found";
+          return `${img.filename.substring(
+            mode === "public" ? 44 : 45
+          )} - ${className}`;
+        })
+        .join("\n");
+      const blob = new Blob([content], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "annotated-images-info.txt";
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      showAlert("Annotations Downloaded Successfully", "success");
+    }
+  };
+
   const showAlert = (message, type) => {
     setSnackbarMessage(message);
     setSnackbarType(type);
@@ -295,16 +332,10 @@ const Dashboard = ({ mode }) => {
       <AppBar position="static" sx={{ backgroundColor: "primary" }}>
         <Toolbar>
           <Button
-            startIcon={
-              <ArrowBackIosNewRoundedIcon sx={{ color: "primary.main" }} />
-            }
+            startIcon={<ArrowBackIosNewRoundedIcon sx={{ color: "primary.main" }} />}
             onClick={() => navigate("/selectmode")}
             variant="contained"
-            sx={{
-              marginRight: 1,
-              backgroundColor: "white",
-              color: "primary.main",
-            }}
+            sx={{ marginRight: 1, backgroundColor: "white", color: "primary.main" }}
           >
             Back
           </Button>
@@ -329,38 +360,45 @@ const Dashboard = ({ mode }) => {
         <Typography variant="h4" sx={{ mt: 2, mb: 1, color: "#1976d2" }}>
           Image Management
         </Typography>
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          sx={{ mb: 2 }}
-        >
-          <Button
-            onClick={() => setOpen(true)}
-            startIcon={<UploadRoundedIcon />}
-            variant="contained"
-            color="primary"
-          >
-            Upload Image
-          </Button>
-          <Box flexDirection={"column"}>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={12} md={6}>
+            <Button
+              onClick={() => setOpen(true)}
+              startIcon={<UploadRoundedIcon />}
+              variant="contained"
+              color="primary"
+            >
+              Upload Image
+            </Button>
+          </Grid>
+          <Grid item xs={12} md={6} display="flex" justifyContent="flex-end">
+            {images.some((img) => img.status === "annotated") && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={downloadAnnotatedImagesInfo}
+                sx={{ mr: 2 }}
+                startIcon={<DownloadIcon />}
+              >
+                Download
+              </Button>
+            )}
             <TextField
               label="Search by Class Name"
               variant="outlined"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              sx={{ width: "60%" }}
+              sx={{ width: isMobile ? "100%" : "auto", flexGrow: 1, mr: 2 }}
             />
-            <Box sx={{mt:1}}>
+            <Box display="flex" alignItems="center">
               <Select
                 value={bulkClass}
                 onChange={(e) => setBulkClass(e.target.value)}
                 displayEmpty
-                sx={{ mr: 2, width: "200px" }}
-                size="small"
+                sx={{ width: 200, mr: 2 }}
               >
                 <MenuItem value="">
-                  <em>Select Class for Bulk Assign</em>
+                  <em>Select Class for Bulk</em>
                 </MenuItem>
                 {classes.map((cls) => (
                   <MenuItem key={cls._id} value={cls._id}>
@@ -373,14 +411,13 @@ const Dashboard = ({ mode }) => {
                 color="secondary"
                 onClick={bulkAssignClass}
                 disabled={selectedImages.size === 0 || !bulkClass}
-                size="small"
               >
-                Assign to Selected
+                Assign
               </Button>
             </Box>
-          </Box>
-        </Box>
-        <FormControl component="fieldset">
+          </Grid>
+        </Grid>
+        <FormControl component="fieldset" sx={{ mt: 2 }}>
           <FormLabel component="legend">Status Filter</FormLabel>
           <RadioGroup
             row
@@ -390,16 +427,8 @@ const Dashboard = ({ mode }) => {
             onChange={(e) => setStatusFilter(e.target.value)}
           >
             <FormControlLabel value="all" control={<Radio />} label="All" />
-            <FormControlLabel
-              value="pending"
-              control={<Radio />}
-              label="Pending"
-            />
-            <FormControlLabel
-              value="annotated"
-              control={<Radio />}
-              label="Annotated"
-            />
+            <FormControlLabel value="pending" control={<Radio />} label="Pending" />
+            <FormControlLabel value="annotated" control={<Radio />} label="Annotated" />
           </RadioGroup>
         </FormControl>
         <TableContainer
