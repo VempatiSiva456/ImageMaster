@@ -55,7 +55,7 @@ The user after successfully logging in, can choose to join either a public or pr
 
 ![homePage](images/publicDashboard_all_search.jpeg)
 
-- User can upload new images into the public dashboard page. Multiple images can be uploaded at once.
+- User can upload new images into the public dashboard page. Multiple images can be uploaded at once (multiple formats are also supported).
 
 ![homePage](images/publicDashboard_uploa.jpeg)
 ![homePage](images/publicDashboard_uploadimages.jpeg)
@@ -72,6 +72,12 @@ The user after successfully logging in, can choose to join either a public or pr
 ![homePage](images/pubDash_4.jpeg)
 ![homePage](images/pubDash_5.jpeg)
 
+- Users can select multiple images at a time to assign a class to all of them (for both private and public dashboards).
+
+![homePage](images/bunkClassAssignment.png)
+![homePage](images/bunkClassAssignment2.png)
+![homePage](images/bunkClassAssignment3.png)
+
 ## 5. Private Dashboard:
 
 - The list of all the images that are owned by the user are displayed on this page. No user will be able to view the private dashboard of another user.
@@ -82,8 +88,6 @@ The user after successfully logging in, can choose to join either a public or pr
 
 ![homePage](images/priDash_2.jpeg)
 ![homePage](images/priDash_3.jpeg)
-
-- Users can select multiple images at a time to assign a class to all of them.
 
 ![homePage](images/priDash_4.jpeg)
 
