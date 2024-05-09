@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  minio:
+    image: minio/minio
+    volumes:
+      - ./data:/data  
+    ports:
+      - "9000:9000"  
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      DB_CONNECTION_STRING: mongodb+srv://vempatisiva7:Rgukt%40N190604@digipay.rflrxlp.mongodb.net/?retryWrites=true&w=majority&appName=digipay
+      JWT_SECRET: Rgukt@N190604
+      MINIO_END_POINT: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    depends_on:
+      - mongo
+      - minio
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:
