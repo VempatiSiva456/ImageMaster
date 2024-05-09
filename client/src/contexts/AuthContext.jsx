@@ -5,8 +5,9 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
+  const [userRole, setUserRole] = useState(localStorage.getItem("role"));
   const [isLoggedIn, setIsLoggedIn] = useState(
-    () => localStorage.getItem("isLoggedIn") === "true"
+    localStorage.getItem("isLoggedIn") === "true"
   );
 
   const checkSession = async () => {
@@ -21,17 +22,23 @@ export const AuthProvider = ({ children }) => {
       if (response.ok) {
         const data = await response.json();
         setIsLoggedIn(data.isLoggedIn);
+        if (data.isLoggedIn) {
+          localStorage.setItem("role", data.user.role);
+          setUserRole(data.user.role);
+        }
       } else {
         throw new Error("Session verification failed");
       }
     } catch (error) {
       console.error(error);
       setIsLoggedIn(false);
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("role");
+      setUserRole(null);
     }
   };
+
   useEffect(() => {
-    const storedIsLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-    setIsLoggedIn(storedIsLoggedIn);
     checkSession();
   }, []);
 
@@ -49,11 +56,18 @@ export const AuthProvider = ({ children }) => {
         credentials: "include",
         body: JSON.stringify({ email, password }),
       });
-      if (!response.ok) {
+
+      if (response.ok) {
+        const data = await response.json();
+        setIsLoggedIn(true);
+        localStorage.setItem("isLoggedIn", true);
+        localStorage.setItem("role", data.user.role);
+        setUserRole(data.user.role);
+      } else {
         throw new Error("Login Failed, Please check your credentials");
       }
-      await checkSession();
     } catch (error) {
+      console.error("Login error:", error);
       throw error;
     }
   };
@@ -64,18 +78,24 @@ export const AuthProvider = ({ children }) => {
         method: "POST",
         credentials: "include",
       });
-      if (!response.ok) {
+      if (response.ok) {
+        localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("role");
+        setIsLoggedIn(false);
+        setUserRole(null);
+      } else {
         throw new Error("Logout failed");
       }
-
-      await checkSession();
     } catch (error) {
       console.error("Logout error:", error);
+      throw error;
     }
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout, checkSession }}>
+    <AuthContext.Provider
+      value={{ isLoggedIn, userRole, login, logout, checkSession }}
+    >
       {children}
     </AuthContext.Provider>
   );

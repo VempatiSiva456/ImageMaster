@@ -111,7 +111,7 @@ const Dashboard = ({ mode }) => {
       return await response.json();
     } catch (error) {
       console.error("Error fetching images:", error);
-      showAlert("Failed to fetch images", "error");
+      showAlert("Start Uploading", "info");
       return [];
     }
   };

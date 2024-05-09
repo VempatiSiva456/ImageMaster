@@ -50,6 +50,7 @@ const SelectMode = () => {
             onClick={() => navigate("/create-classes")}
             variant="contained"
             fullWidth
+            disabled={localStorage.getItem("role") === 'user'}
           >
             Create Classes
           </Button>

@@ -11,6 +11,11 @@ import {
   Typography,
   Container,
   Alert,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -33,6 +38,7 @@ export default function SignUp() {
   const [formData, setFormData] = React.useState({
     name: "",
     email: "",
+    role: "",
     password: "",
     confirmPassword: "",
   });
@@ -75,6 +81,7 @@ export default function SignUp() {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
+          role: formData.role,
           password: formData.password,
         }),
       });
@@ -95,6 +102,7 @@ export default function SignUp() {
     return (
       formData.name &&
       formData.email &&
+      formData.role &&
       formData.password.length >= 5 &&
       formData.password === formData.confirmPassword &&
       isEmailValid
@@ -131,6 +139,29 @@ export default function SignUp() {
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
+            <Grid item xs={12}>
+                <FormControl component="fieldset">
+                  <FormLabel component="legend">Role</FormLabel>
+                  <RadioGroup
+                    row
+                    aria-label="role"
+                    name="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                  >
+                    <FormControlLabel
+                      value="user"
+                      control={<Radio />}
+                      label="User"
+                    />
+                    <FormControlLabel
+                      value="admin"
+                      control={<Radio />}
+                      label="Admin"
+                    />
+                  </RadioGroup>
+                </FormControl>
+              </Grid>
               <Grid item xs={12}>
                 <TextField
                   autoComplete="name"

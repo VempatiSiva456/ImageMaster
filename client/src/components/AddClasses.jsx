@@ -166,13 +166,13 @@ const AddClasses = () => {
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", flexDirection: "column" }}>
-      <AppBar position="static" sx={{ backgroundColor: "blue" }}>
+      <AppBar position="static" sx={{ backgroundColor: "primary.main" }}>
         <Toolbar>
           <Button
             startIcon={<ArrowBackIosNewIcon />}
             onClick={() => navigate("/selectmode")}
             variant="contained"
-            sx={{ marginRight: 1, backgroundColor: "white", color: "blue" }}
+            sx={{ marginRight: 1, backgroundColor: "white", color: "primary.main" }}
           >
             Back
           </Button>
@@ -181,15 +181,15 @@ const AddClasses = () => {
           </Typography>
           <Button
             onClick={logout}
-            startIcon={<LogoutIcon sx={{color:"blue"}}/>}
+            startIcon={<LogoutIcon sx={{color:"primary.main"}}/>}
             variant="contained"
-            sx={{backgroundColor: "white", color: "blue"}}
+            sx={{backgroundColor: "white", color: "primary.main"}}
           >
             Logout
           </Button>
         </Toolbar>
       </AppBar>
-      <Box padding={3} component={Paper} elevation={3} sx={{ mt: 3 }} width={"60%"} alignSelf={"center"} display={"flex"} flexDirection={"column"}>
+      <Box padding={3} component={Paper} elevation={3} sx={{ mt: 3 }} width={"60%"} alignSelf={"center"} alignItems={"center"} display={"flex"} flexDirection={"column"}>
         <Typography variant="h5" gutterBottom sx={{ color: "#1976d2" }}>
           Add New Domain
         </Typography>
@@ -207,7 +207,7 @@ const AddClasses = () => {
           variant="contained"
           color="primary"
           disabled={!newDomainOnlyName}
-          sx={{ mt: 2, backgroundColor: "#1976d2", color: "white", width:"20vh" }}
+          sx={{ mt: 2, backgroundColor: "#1976d2", color: "white", width:"25vh" }}
         >
           Add Domain
         </Button>
@@ -237,7 +237,7 @@ const AddClasses = () => {
           variant="contained"
           color="primary"
           disabled={!newClassName || !newDomainName}
-          sx={{ mt: 2, backgroundColor: "#1976d2", color: "white", width:"20vh" }}
+          sx={{ mt: 2, backgroundColor: "#1976d2", color: "white", width:"25vh" }}
         >
           Add Class
         </Button>

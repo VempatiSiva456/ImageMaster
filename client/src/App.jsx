@@ -21,7 +21,7 @@ function App() {
         <Route
           path="/selectmode"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['admin', 'user']}>
               <SelectMode />
             </ProtectedRoute>
           }
@@ -29,7 +29,7 @@ function App() {
         <Route
           path="/public-dashboard"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['admin', 'user']}>
               <Dashboard mode={"public"} />
             </ProtectedRoute>
           }
@@ -37,7 +37,7 @@ function App() {
         <Route
           path="/private-dashboard"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['admin', 'user']}>
               <Dashboard mode={"private"} />
             </ProtectedRoute>
           }
@@ -45,7 +45,7 @@ function App() {
         <Route
           path="/create-classes"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['admin']}>
               <AddClasses />
             </ProtectedRoute>
           }

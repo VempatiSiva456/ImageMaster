@@ -19,7 +19,7 @@ exports.login = async (req, res) => {
       sameSite: "strict",
       maxAge: 24 * 60 * 60 * 1000,
     });
-    res.status(201).send({ user: result.user });
+    res.status(201).json({ user: result.user });
   } catch (error) {
     const status = error.status || 400;
     res.status(status).send({ error: error.message });
