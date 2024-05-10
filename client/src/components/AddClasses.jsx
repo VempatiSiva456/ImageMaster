@@ -43,14 +43,14 @@ const AddClasses = () => {
       const domainResponse = await fetch(
         "http://localhost:5000/api/domain/getAll",
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          // headers: { Authorization: `Bearer ${localStorage.getItem("token_tool_user")}` },
           credentials: "include",
         }
       );
       const classResponse = await fetch(
         "http://localhost:5000/api/class/getAll",
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          // headers: { Authorization: `Bearer ${localStorage.getItem("token_tool_user")}` },
           credentials: "include",
         }
       );
@@ -80,7 +80,7 @@ const AddClasses = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          // Authorization: `Bearer ${localStorage.getItem("token_tool_user")}`,
         },
         body: JSON.stringify({ name: newClassName, domainName: newDomainName }),
         credentials: "include",
@@ -102,7 +102,7 @@ const AddClasses = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          // Authorization: `Bearer ${localStorage.getItem("token_tool_user")}`,
         },
         body: JSON.stringify({ name: newDomainOnlyName }),
         credentials: "include",
@@ -123,7 +123,7 @@ const AddClasses = () => {
         `http://localhost:5000/api/domain/delete/${domainId}`,
         {
           method: "DELETE",
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          // headers: { Authorization: `Bearer ${localStorage.getItem("token_tool_user")}` },
           credentials: "include",
         }
       );
@@ -142,7 +142,7 @@ const AddClasses = () => {
         `http://localhost:5000/api/class/delete/${classId}`,
         {
           method: "DELETE",
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          // headers: { Authorization: `Bearer ${localStorage.getItem("token_tool_user")}` },
           credentials: "include",
         }
       );

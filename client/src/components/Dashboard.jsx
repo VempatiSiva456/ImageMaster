@@ -41,6 +41,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DownloadIcon from '@mui/icons-material/Download';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 
 const Dashboard = ({ mode }) => {
   const [open, setOpen] = useState(false);
@@ -58,6 +60,7 @@ const Dashboard = ({ mode }) => {
   const [snackbarType, setSnackbarType] = useState("success");
   const [selectedImages, setSelectedImages] = useState(new Set());
   const [bulkClass, setBulkClass] = useState("");
+  const [zoomLevels, setZoomLevels] = useState({});
 
   const navigate = useNavigate();
   const pageSize = 10;
@@ -83,7 +86,7 @@ const Dashboard = ({ mode }) => {
   const fetchClasses = async () => {
     try {
       const response = await fetch("http://localhost:5000/api/class/getAll", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        // headers: { Authorization: `Bearer ${localStorage.getItem("token_tool_user")}` },
         credentials: "include",
       });
       return await response.json();
@@ -97,7 +100,7 @@ const Dashboard = ({ mode }) => {
   const fetchUsers = async () => {
     try {
       const response = await fetch("http://localhost:5000/api/auth/getAll", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        // headers: { Authorization: `Bearer ${localStorage.getItem("token_tool_user")}` },
         credentials: "include",
       });
       return await response.json();
@@ -114,7 +117,7 @@ const Dashboard = ({ mode }) => {
         `http://localhost:5000/api/images/get?mode=${mode}`,
         {
           method: "GET",
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          // headers: { Authorization: `Bearer ${localStorage.getItem("token_tool_user")}` },
           credentials: "include",
         }
       );
@@ -159,7 +162,7 @@ const Dashboard = ({ mode }) => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            // Authorization: `Bearer ${localStorage.getItem("token_tool_user")}`,
           },
           body: JSON.stringify({ classId }),
           credentials: "include",
@@ -197,7 +200,7 @@ const Dashboard = ({ mode }) => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            // Authorization: `Bearer ${localStorage.getItem("token_tool_user")}`,
           },
           credentials: "include",
         }
@@ -231,7 +234,7 @@ const Dashboard = ({ mode }) => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            // Authorization: `Bearer ${localStorage.getItem("token_tool_user")}`,
           },
           body: JSON.stringify({
             imageIds: Array.from(selectedImages),
@@ -267,6 +270,45 @@ const Dashboard = ({ mode }) => {
     setImages(imageData);
   };
 
+  const deleteImages = async() => {
+    if (selectedImages.size === 0) {
+      showAlert("No images selected for deletion", "warning");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/images/delete`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization: `Bearer ${localStorage.getItem("token_tool_user")}`,
+          },
+          body: JSON.stringify({
+            imageIds: Array.from(selectedImages),
+          }),
+          credentials: "include",
+        }
+      );
+      if (!response.ok) {
+      const errorResponse = await response.json();
+      throw new Error(errorResponse.error || "Failed to delete images");
+    }
+
+    const { deletedCount } = await response.json();
+    showAlert(`${deletedCount} images deleted successfully`, "success");
+
+    const updatedImages = images.filter(img => !selectedImages.has(img._id));
+    setImages(updatedImages);
+    setSelectedImages(new Set());
+
+  } catch (error) {
+    console.error("Error deleting images:", error);
+    showAlert("Error deleting images", "error");
+  }
+  };
+
   const downloadAnnotatedImagesInfo = () => {
     const annotatedImages = images.filter((img) => img.status === "annotated");
     if (!annotatedImages.length) {
@@ -295,6 +337,13 @@ const Dashboard = ({ mode }) => {
       URL.revokeObjectURL(url);
       showAlert("Annotations Downloaded Successfully", "success");
     }
+  };
+
+  const adjustZoom = (imageId, adjustment) => {
+    setZoomLevels(prev => ({
+      ...prev,
+      [imageId]: (prev[imageId] || 100) + adjustment
+    }));
   };
 
   const showAlert = (message, type) => {
@@ -373,6 +422,7 @@ const Dashboard = ({ mode }) => {
           </Grid>
           <Grid item xs={12} md={6} display="flex" justifyContent="flex-end">
             {images.some((img) => img.status === "annotated") && (
+              <Box display="flex" alignItems="center">
               <Button
                 variant="contained"
                 color="primary"
@@ -382,6 +432,7 @@ const Dashboard = ({ mode }) => {
               >
                 Download
               </Button>
+              </Box>
             )}
             <TextField
               label="Search by Class Name"
@@ -408,13 +459,24 @@ const Dashboard = ({ mode }) => {
               </Select>
               <Button
                 variant="contained"
-                color="secondary"
+                color="primary"
                 onClick={bulkAssignClass}
                 disabled={selectedImages.size === 0 || !bulkClass}
               >
                 Assign
               </Button>
             </Box>
+            <Box display="flex" alignItems="center">
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={deleteImages}
+                disabled={selectedImages.size === 0}
+                sx = {{ml: 1}}
+              >
+                Delete
+              </Button>
+              </Box>
           </Grid>
         </Grid>
         <FormControl component="fieldset" sx={{ mt: 2 }}>
@@ -448,8 +510,9 @@ const Dashboard = ({ mode }) => {
                       selectedImages.size < currentImages.length
                     }
                     checked={
-                      currentImages.length > 0 &&
-                      selectedImages.size === currentImages.length
+                      selectedImages.size > 0
+                      // currentImages.length > 0 &&
+                      // selectedImages.size === currentImages.length
                     }
                     onChange={(e) => {
                       if (e.target.checked) {
@@ -525,11 +588,31 @@ const Dashboard = ({ mode }) => {
                     {img.filename.substring(mode === "public" ? 44 : 45)}
                   </TableCell>
                   <TableCell>
-                    <img
-                      src={img.imageUrl}
-                      alt={img.filename.substring(44)}
-                      style={{ width: "100px", height: "auto" }}
-                    />
+                  <Box display="flex" alignItems="center" justifyContent="center">
+                      <IconButton
+                        aria-label="zoom-out"
+                        onClick={() => adjustZoom(img._id, -10)}
+                        size="small"
+                      >
+                        <ZoomOutIcon fontSize="small" />
+                      </IconButton>
+                      <img
+                        src={img.imageUrl}
+                        alt={img.filename.substring(mode === "public" ? 44 : 45)}
+                        style={{
+                          width: `${zoomLevels[img._id] || 100}px`,
+                          height: "auto",
+                          transition: "width 0.3s",
+                        }}
+                      />
+                      <IconButton
+                        aria-label="zoom-in"
+                        onClick={() => adjustZoom(img._id, 10)}
+                        size="small"
+                      >
+                        <ZoomInIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
                   </TableCell>
                   <TableCell>{getStatusChip(img.status)}</TableCell>
                   <TableCell>

@@ -68,3 +68,18 @@ exports.updateBulkImagesClass = async (req, res) => {
       res.status(500).send({ error: error.message });
   }
 };
+
+exports.deleteImages = async (req, res) => {
+  try {
+    const imageIds = req.body.imageIds;
+    if (!imageIds || !Array.isArray(imageIds)) {
+      return res.status(400).json({ error: "Invalid image IDs provided" });
+    }
+
+    const deleted = await imageService.deleteImages(imageIds);
+    res.status(200).json({ deletedCount: deleted.deletedCount });
+  } catch (error) {
+    console.error("Error in deleteImages controller:", error);
+    res.status(500).json({ error: error.message });
+  }
+};

@@ -28,9 +28,9 @@ const DropzoneComponent = ({ mode, onSuccess}) => {
         {
           method: "POST",
           body: formData,
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          // headers: {
+          //   Authorization: `Bearer ${localStorage.getItem("token")}`,
+          // },
           credentials: "include",
         }
       );

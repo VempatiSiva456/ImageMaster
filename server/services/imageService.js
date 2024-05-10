@@ -170,3 +170,13 @@ exports.updateBulkImagesClass = async (imageIds, classId, userId) => {
     throw error;
   }
 };
+
+exports.deleteImages = async (imageIds) => {
+  try {
+    const result = await Image.deleteMany({ _id: { $in: imageIds } });
+    return result;
+  } catch (error) {
+    console.error('Error deleting images:', error);
+    throw error;
+  }
+};
