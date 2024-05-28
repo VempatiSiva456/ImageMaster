@@ -86,7 +86,6 @@ const Dashboard = ({ mode }) => {
   const fetchClasses = async () => {
     try {
       const response = await fetch("http://localhost:5000/api/class/getAll", {
-        // headers: { Authorization: `Bearer ${localStorage.getItem("token_tool_user")}` },
         credentials: "include",
       });
       return await response.json();
@@ -100,7 +99,6 @@ const Dashboard = ({ mode }) => {
   const fetchUsers = async () => {
     try {
       const response = await fetch("http://localhost:5000/api/auth/getAll", {
-        // headers: { Authorization: `Bearer ${localStorage.getItem("token_tool_user")}` },
         credentials: "include",
       });
       return await response.json();
@@ -117,7 +115,6 @@ const Dashboard = ({ mode }) => {
         `http://localhost:5000/api/images/get?mode=${mode}`,
         {
           method: "GET",
-          // headers: { Authorization: `Bearer ${localStorage.getItem("token_tool_user")}` },
           credentials: "include",
         }
       );
@@ -162,7 +159,6 @@ const Dashboard = ({ mode }) => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            // Authorization: `Bearer ${localStorage.getItem("token_tool_user")}`,
           },
           body: JSON.stringify({ classId }),
           credentials: "include",
@@ -200,7 +196,6 @@ const Dashboard = ({ mode }) => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            // Authorization: `Bearer ${localStorage.getItem("token_tool_user")}`,
           },
           credentials: "include",
         }
@@ -234,7 +229,6 @@ const Dashboard = ({ mode }) => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            // Authorization: `Bearer ${localStorage.getItem("token_tool_user")}`,
           },
           body: JSON.stringify({
             imageIds: Array.from(selectedImages),
@@ -283,7 +277,6 @@ const Dashboard = ({ mode }) => {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-            // Authorization: `Bearer ${localStorage.getItem("token_tool_user")}`,
           },
           body: JSON.stringify({
             imageIds: Array.from(selectedImages),
@@ -511,8 +504,6 @@ const Dashboard = ({ mode }) => {
                     }
                     checked={
                       selectedImages.size > 0
-                      // currentImages.length > 0 &&
-                      // selectedImages.size === currentImages.length
                     }
                     onChange={(e) => {
                       if (e.target.checked) {
